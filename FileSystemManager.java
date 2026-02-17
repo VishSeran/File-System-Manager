@@ -61,12 +61,16 @@ public class FileSystemManager {
             case "help":
                 displayHelp();
                 break;
+
+            case "ls":
+                listDirectory();
+                break;
         }
 
         return true;
     }
 
-    private static void displayHelp() {
+    private void displayHelp() {
         System.out.println("\nAvailable commands:");
         System.out.println("  help              - Display this help message");
         System.out.println("  ls                - List files in current directory");
@@ -79,5 +83,30 @@ public class FileSystemManager {
         System.out.println("  find <pattern>    - Search for files matching pattern");
         System.out.println("  info <name>       - Display file information");
         System.out.println("  exit              - Exit the program");
+    }
+
+    private void listDirectory() {
+
+        File[] files = currentDirectory.listFiles();
+
+        if (files.length == 0) {
+            System.out.println("Directory is empty or cannot access!");
+            return;
+
+        }
+        // Display the list of files and directories
+        System.out.println("Content of directory: " + currentDirectory.getAbsolutePath());
+        System.out.println("Type | Size (bytes) | Last Modified       | Name");
+        System.out.println("-------------------------------------------------");
+
+        for(File file: files){
+            char type = file.isDirectory() ? 'd' : '-';
+
+            String lastModified = dateFormat.format(file.lastModified());
+
+            long size = file.isFile() ? file.length() : 0 ;
+
+            System.err.printf("%c   | %lld  | %s    | %s%n", type, size, lastModified, file.getName());
+        }
     }
 }
