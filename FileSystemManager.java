@@ -65,6 +65,10 @@ public class FileSystemManager {
             case "ls":
                 listDirectory();
                 break;
+
+            case "cd <directory> ":
+                changeDirectory(args);
+                break;
         }
 
         return true;
@@ -99,14 +103,47 @@ public class FileSystemManager {
         System.out.println("Type | Size (bytes) | Last Modified       | Name");
         System.out.println("-------------------------------------------------");
 
-        for(File file: files){
+        for (File file : files) {
             char type = file.isDirectory() ? 'd' : '-';
 
             String lastModified = dateFormat.format(file.lastModified());
 
-            long size = file.isFile() ? file.length() : 0 ;
+            long size = file.isFile() ? file.length() : 0;
 
             System.err.printf("%c   | %lld  | %s    | %s%n", type, size, lastModified, file.getName());
         }
+    }
+
+    private void changeDirectory(String dirName) {
+
+        
+            File[] files = currentDirectory.listFiles();
+            boolean found = false;
+
+           
+        if(dirName.equals("..")){
+            File parent = currentDirectory.getParentFile();
+
+            if(parent != null){
+                currentDirectory = parent;
+            }else{
+                System.out.println("Already in the root directory");
+            }
+        }else{
+            for(File file:files){
+                if(file.isDirectory() && file.getName().equals(dirName)){
+                    found = true;
+                }
+            }
+
+            if(found ==true){
+                File newDir = new File(currentDirectory, dirName);
+                currentDirectory = newDir;
+                
+            }else{
+                System.out.println("Error: Directory does not exist: " + dirName);
+            }
+        }
+
     }
 }
