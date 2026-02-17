@@ -69,6 +69,10 @@ public class FileSystemManager {
             case "cd <directory> ":
                 changeDirectory(args);
                 break;
+
+            case "pwd":
+                System.out.println(currentDirectory.getAbsolutePath());
+                break;
         }
 
         return true;
