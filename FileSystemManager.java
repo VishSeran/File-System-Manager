@@ -73,6 +73,10 @@ public class FileSystemManager {
             case "pwd":
                 System.out.println(currentDirectory.getAbsolutePath());
                 break;
+
+            case "mkdir <name>":
+                createDirectory(args);
+
         }
 
         return true;
@@ -120,32 +124,54 @@ public class FileSystemManager {
 
     private void changeDirectory(String dirName) {
 
-        
-            File[] files = currentDirectory.listFiles();
-            boolean found = false;
+        File[] files = currentDirectory.listFiles();
+        boolean found = false;
 
-           
-        if(dirName.equals("..")){
+        if (dirName.equals("..")) {
             File parent = currentDirectory.getParentFile();
 
-            if(parent != null){
+            if (parent != null) {
                 currentDirectory = parent;
-            }else{
+            } else {
                 System.out.println("Already in the root directory");
             }
-        }else{
-            for(File file:files){
-                if(file.isDirectory() && file.getName().equals(dirName)){
+        } else {
+            for (File file : files) {
+                if (file.isDirectory() && file.getName().equals(dirName)) {
                     found = true;
                 }
             }
 
-            if(found ==true){
+            if (found == true) {
                 File newDir = new File(currentDirectory, dirName);
                 currentDirectory = newDir;
-                
-            }else{
+
+            } else {
                 System.out.println("Error: Directory does not exist: " + dirName);
+            }
+        }
+
+    }
+
+    private  void createDirectory(String dirName) {
+
+        File directory = new File(currentDirectory, dirName);
+
+        if (dirName.contentEquals("- + / @")) {
+            System.out.println("Invalid name!");
+            return;
+        }
+
+        if (directory.exists()) {
+            System.out.println("Directory name already exists!");
+
+        } else {
+            boolean isCreated = directory.mkdirs();
+
+            if (isCreated) {
+                System.out.println("Directory created succeefully " + directory);
+            } else {
+                System.out.println("Errror while creating the directory");
             }
         }
 
