@@ -78,9 +78,13 @@ public class FileSystemManager {
             case "mkdir <name>":
                 createDirectory(args);
                 break;
-            
-            case "touch <name>" :
+
+            case "touch <name>":
                 createFile(args);
+                break;
+
+            case "rm <name>":
+                removeFileOrDirect(args);
                 break;
 
         }
@@ -159,7 +163,7 @@ public class FileSystemManager {
 
     }
 
-    private  void createDirectory(String dirName) {
+    private void createDirectory(String dirName) {
 
         File directory = new File(currentDirectory, dirName);
 
@@ -183,30 +187,89 @@ public class FileSystemManager {
 
     }
 
-    private void createFile(String fileName){
+    private void createFile(String fileName) {
 
-        File file = new File(currentDirectory,fileName);
+        File file = new File(currentDirectory, fileName);
 
-        if(file.isFile()){
-            
+        if (file.isFile()) {
 
-            if(file.exists()){
+            if (file.exists()) {
                 System.out.println("file is already exists!");
             }
 
             try {
                 boolean created = file.createNewFile();
 
-                if(created){
+                if (created) {
                     System.out.println("File created successfull in " + fileName);
-                }else{
+                } else {
                     System.out.println("File created failed!" + fileName);
                 }
             } catch (IOException e) {
                 System.out.println("Invalid input type: " + e.getMessage());
             }
-        }else{
+        } else {
             System.out.println("Invalid file type!");
         }
+    }
+
+    private void removeFileOrDirect(String fileName) {
+
+        File fileToDelete = new File(currentDirectory, fileName);
+
+        if (!fileToDelete.exists()) {
+            System.out.println("File does not exists!" + fileName);
+        }
+
+        if (fileToDelete.isDirectory()) {
+            File[] content = fileToDelete.listFiles();
+
+            if (content != null && content.length == 0) {
+                System.out.println("Warning: Directory is not empty. Delete anyway? (y/n)");
+                String response = scanner.nextLine().toLowerCase().trim();
+
+                if (!response.equalsIgnoreCase("y")) {
+                    System.err.println("Deletion terminated!");
+                    return;
+                }
+
+                boolean deleted = deleteRecursively(fileToDelete);
+
+                if(deleted){
+                    System.out.println("Deleted file successfully! " + fileName);
+                }else{
+                    System.out.println("Deleted file failed! " + fileName);
+                }
+                return;
+            }
+
+            
+        }
+
+        boolean isDeleted = fileToDelete.delete();
+        if(isDeleted){
+            System.out.println( fileToDelete.isDirectory() ? "Directory" : "File" +"deleted successfully");
+        }else{
+            System.out.println(fileToDelete.isDirectory() ? "Directory" : "File" +"delete failed");
+        }
+    }
+
+    private boolean  deleteRecursively(File directory) {
+
+        File[] content = directory.listFiles();
+
+        if (content != null) {
+
+            for (File file : content) {
+                if (file.isDirectory()) {
+                    deleteRecursively(directory);
+                } else {
+                    directory.delete();
+                }
+            }
+        }
+
+       return directory.delete();
+
     }
 }
