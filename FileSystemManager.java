@@ -1,5 +1,6 @@
 
 import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Scanner;
 
@@ -76,6 +77,11 @@ public class FileSystemManager {
 
             case "mkdir <name>":
                 createDirectory(args);
+                break;
+            
+            case "touch <name>" :
+                createFile(args);
+                break;
 
         }
 
@@ -175,5 +181,32 @@ public class FileSystemManager {
             }
         }
 
+    }
+
+    private void createFile(String fileName){
+
+        File file = new File(currentDirectory,fileName);
+
+        if(file.isFile()){
+            
+
+            if(file.exists()){
+                System.out.println("file is already exists!");
+            }
+
+            try {
+                boolean created = file.createNewFile();
+
+                if(created){
+                    System.out.println("File created successfull in " + fileName);
+                }else{
+                    System.out.println("File created failed!" + fileName);
+                }
+            } catch (IOException e) {
+                System.out.println("Invalid input type: " + e.getMessage());
+            }
+        }else{
+            System.out.println("Invalid file type!");
+        }
     }
 }
